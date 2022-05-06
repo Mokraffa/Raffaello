@@ -1,0 +1,48 @@
+WITH time_frame_week AS
+(SELECT date_trunc('day',NOW()) - INTERVAL '3 days')
+
+select
+
+cc.id,
+
+au.date_joined,
+
+cc.company_name,
+
+cc.mobile,
+
+au.email,
+
+concat(cc.first_name,' ',cc.last_name) as "contact name",
+
+case
+when cc.category_id = '1' then 'Online business'
+when cc.category_id = '2' then 'Delivery'
+when cc.category_id = '3' then 'Bar/Pub'
+when cc.category_id = '4' then 'Nightclub'
+when cc.category_id = '5' then 'Venue/Event company'
+when cc.category_id = '6' then 'Restaurant'
+when cc.category_id = '7' then 'Catering'
+when cc.category_id = '8' then 'Hotel'
+when cc.category_id = '9' then 'Private'
+when cc.category_id = '10' then 'Other'
+else null
+end as Categoty,
+
+CASE
+WHEN COUNT(bb.id) != 0 THEN 'Yes' else 'No'
+END AS "Booking made?",
+
+count(bb.id)
+
+from client_client cc
+left join auth_user au on au.id = cc.user_id
+left join job_jobrequest jj on jj.client_id = cc.id
+left join booking_booking bb on bb.jobrequest_id = jj.id
+
+
+where au.date_joined >= '04-01-2021'
+--and date_trunc('week',au.date_joined) <= (SELECT * FROM time_frame_week)
+
+group by 1, 2, 3, 4 , 5 , 6 , 7
+order by 2 desc
