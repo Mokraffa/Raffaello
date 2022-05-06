@@ -1,0 +1,128 @@
+with monthly_sums as (
+with distinct_companies_since_april as
+(select distinct client_client.id
+from client_client
+join job_jobrequest on job_jobrequest.client_id = client_client.id
+join auth_user on auth_user.id = client_client.user_id
+WHERE job_jobrequest.date >= '09-27-2021'
+and job_jobrequest.agency_id = '1'
+)
+
+
+select
+date_trunc('week', job_jobrequest.date) as week,
+client_client.id as companyID,
+client_client.company_name as companyname,
+sum(booking_booking.client_total_cost -
+booking_booking.freelancer_total_pay) as monthTotal
+from client_client
+join job_jobrequest on job_jobrequest.client_id = client_client.id
+join booking_booking on booking_booking.jobrequest_id = job_jobrequest.id
+join distinct_companies_since_april on
+distinct_companies_since_april.id = client_client.id
+group by  1,2,3
+order by 2,1
+)
+
+select
+companyID,
+companyname,
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '14 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 37",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '13 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 38",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '12 week'
+THEN monthTotal
+               ELSE NULL
+           END),0) AS "week 39",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '11 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 40",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '10 week'
+THEN monthTotal
+               ELSE NULL
+           END),0) AS "week 41",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '9 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 42",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '8 week'
+THEN monthTotal
+               ELSE NULL
+           END),0) AS "week 43",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '7 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 44",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '6 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 45",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '5 week'
+THEN monthTotal
+               ELSE NULL
+           END),0) AS "week 46",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '4 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 47",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '3 week'
+THEN monthTotal
+               ELSE NULL
+           END),0) AS "week 48",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '2 week'
+THEN monthTotal
+               ELSE NULL
+           END), 0) AS "week 49",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '1 week'
+THEN monthTotal
+               ELSE NULL
+           END),0) AS "week 50",
+
+coalesce(sum(CASE
+               WHEN week=date_trunc('week',NOW())-interval '0 week'
+THEN monthTotal
+               ELSE NULL
+           END),0) AS "This week",
+
+
+
+
+
+sum(monthTotal)  as "total"
+
+from monthly_sums
+group by 1, 2
