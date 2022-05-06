@@ -1,0 +1,50 @@
+--SELECT date_part('week',DATE('01-03-2021'))
+
+--SELECT MOD(15.03,4)
+WITH Weekly_Revenues as (SELECT sum(bb.client_total_cost) as weekly_total
+       -- , date_part('week',bb.datetime_started) as week_of_year
+       -- , (select
+MAX(date_part('week',booking_booking.datetime_started)) from
+booking_booking)
+    -- , MOD((select
+MAX(date_part('week',booking_booking.datetime_started)) from
+booking_booking)::INTEGER,52)
+-- ,date_part('week',bb.datetime_started) + MOD((select
+MAX(date_part('week',booking_booking.datetime_started)) from
+booking_booking)::INTEGER,52)
+-- ,MOD((date_part('week',bb.datetime_started) + MOD((select
+MAX(date_part('week',booking_booking.datetime_started)) from
+booking_booking)::INTEGER,52))::INTEGER, 52)
+,MOD(( MOD(date_part('week',bb.datetime_started)::INTEGER,53)::INTEGER
++ MOD((select MAX(date_part('week',booking_booking.datetime_started))
+from booking_booking)::INTEGER,52))::INTEGER, 52) as week_of_year
+
+FROM booking_booking bb
+ join job_jobrequest jj on jj.id = bb.jobrequest_id
+
+WHERE bb.datetime_started >= '01-01-2021' and
+  bb.status IN ('OK',
+                                 'NS',
+                                 'CA',
+                                 'UN')
+  AND jj.agency_id IN('1')
+
+    group by week_of_year)
+
+ -- select * from Weekly_Revenues
+
+   select
+--    (select sum(weekly_total) from Weekly_Revenues where
+week_of_year IN (1,2,3,4,5)) as Jan_Revenue,
+ --   (select sum(weekly_total) from Weekly_Revenues where
+week_of_year IN (6,7,8,9)) as Feb_Revenue,
+    (select sum(weekly_total) from Weekly_Revenues where week_of_year
+IN (10,11,12,13)) as March_Revenue
+
+
+  --   (select sum(weekly_total) from Weekly_Revenues where
+week_of_year < 14 and week_of_year > 9) as March_Revenue,
+--    (select sum(weekly_total) from Weekly_Revenues where
+week_of_year < 19 and week_of_year > 13) as April_Revenue,
+  --  (select sum(weekly_total) from Weekly_Revenues where
+week_of_year < 23 and week_of_year > 18) as May_Revenue
